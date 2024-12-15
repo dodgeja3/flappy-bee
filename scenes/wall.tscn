@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://b31dqr7g81jwn"]
+
+[ext_resource type="Script" path="res://scenes/wall.gd" id="1_88ivq"]
+[ext_resource type="Texture2D" uid="uid://qyum4fmlak23" path="res://assets/PipeSpriteLong.png" id="1_xbw3v"]
+[ext_resource type="Script" path="res://scenes/killzone.gd" id="2_018ac"]
+[ext_resource type="PackedScene" uid="uid://c54d2hfeilew8" path="res://scenes/point_box.tscn" id="4_fwq3x"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7rb5b"]
+size = Vector2(14, 239)
+
+[node name="Wall" type="Node2D" groups=["wall_group"]]
+z_index = 4
+script = ExtResource("1_88ivq")
+
+[node name="TopWall2" type="Sprite2D" parent="."]
+position = Vector2(0, -147)
+texture = ExtResource("1_xbw3v")
+flip_v = true
+
+[node name="Killzone" type="Area2D" parent="TopWall2"]
+script = ExtResource("2_018ac")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TopWall2/Killzone"]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_7rb5b")
+
+[node name="BottomWall" type="Sprite2D" parent="."]
+position = Vector2(0, 143)
+texture = ExtResource("1_xbw3v")
+
+[node name="Killzone" type="Area2D" parent="BottomWall"]
+script = ExtResource("2_018ac")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BottomWall/Killzone"]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_7rb5b")
+
+[node name="ClearTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[node name="PointBox" parent="." instance=ExtResource("4_fwq3x")]

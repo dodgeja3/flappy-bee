@@ -1,0 +1,108 @@
+[gd_scene load_steps=13 format=3 uid="uid://8blgsoxnsfko"]
+
+[ext_resource type="Script" path="res://scenes/flappy/flappy.gd" id="1_a02bv"]
+[ext_resource type="Texture2D" uid="uid://bq8y6cqg6h5ig" path="res://assets/Tilemap/beeMap.png" id="1_pucrf"]
+[ext_resource type="Script" path="res://scenes/hurt_box.gd" id="3_gyo23"]
+[ext_resource type="AudioStream" uid="uid://crvry8ryd8ate" path="res://Sound/wing-flap.mp3" id="4_gqk2v"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tto1y"]
+atlas = ExtResource("1_pucrf")
+region = Rect2(17, 85, 17, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fp7yj"]
+atlas = ExtResource("1_pucrf")
+region = Rect2(34, 85, 17, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lwt0w"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tto1y")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fp7yj")
+}],
+"loop": true,
+"name": &"flap",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lkox0"]
+radius = 3.0
+
+[sub_resource type="Animation" id="Animation_r1b72"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_2gins"]
+resource_name = "die"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -3.14159]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_p708n"]
+_data = {
+"RESET": SubResource("Animation_r1b72"),
+"die": SubResource("Animation_2gins")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_etgfx"]
+radius = 4.0
+
+[node name="Flappy" type="CharacterBody2D"]
+z_index = 10
+script = ExtResource("1_a02bv")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_lwt0w")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("CircleShape2D_lkox0")
+
+[node name="JumpTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_p708n")
+}
+
+[node name="HurtBox" type="Area2D" parent="."]
+script = ExtResource("3_gyo23")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_etgfx")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_gqk2v")
+
+[connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]
