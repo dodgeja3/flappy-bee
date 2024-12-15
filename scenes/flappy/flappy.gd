@@ -9,6 +9,7 @@ const GRAVITY_SCALE = 0.30
 @onready var collision_shape = $CollisionShape2D
 @onready var animation_player = $AnimationPlayer
 @onready var flap_audio = $AudioStreamPlayer2D
+@onready var hurt_box = $HurtBox
 @onready var is_dead = false
 
 func _physics_process(delta: float) -> void:
@@ -23,14 +24,15 @@ func _physics_process(delta: float) -> void:
 	# Play flap animation
 	if $JumpTimer.is_stopped():
 		animated_sprite.play("default")
-	else:
-		animated_sprite.play("flap")
 		
 		
 	# Only jump if allowed
 	if Input.is_action_just_pressed("jump") and $JumpTimer.is_stopped():
 		velocity.y = JUMP_VELOCITY
 		$JumpTimer.start()
+		flap_audio.play()
+		animation_player.stop(true)
+		animation_player.play("flap")
 
 	# Go fast and RIIIIGHT
 	velocity.x = 1 * SPEED
@@ -38,6 +40,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func die():
-	print("You Died!")
 	animation_player.play("die")
+	# Disable collision shape to avoid hitting other things when dead
+	collision_shape.set_deferred("disabled", true)
 	is_dead = true
